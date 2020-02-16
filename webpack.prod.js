@@ -39,6 +39,10 @@ module.exports = {
                 ]
             },
             {
+                test: /\.html$/i,
+                loader: 'html-loader',
+            },
+            {
                 test: /\.js$/,
                 exclude: /node_modules./,
                 loader: 'babel-loader',
@@ -50,8 +54,9 @@ module.exports = {
                 test: /\.(png|jpe?g|gif|svg|jfif)$/i,
                 loader: 'file-loader',
                 options: {
-                    outputPath: '../assets',
+                    outputPath: 'assets',
                     publicPath: '../assets',
+                    esModule: false,
                 }
             },
         ],
@@ -60,8 +65,10 @@ module.exports = {
     resolve: {
         extensions: ['.js', '.jsx', '.scss'],
         alias: {
-            Assets: path.resolve(__dirname, 'assets/'),
-        }          
+            Assets: path.resolve(__dirname, 'src/assets'),
+            Html: path.resolve(__dirname, 'src/html'),
+            Styles: path.resolve(__dirname, 'src/styles'),
+        }           
     },
 
     plugins: [
