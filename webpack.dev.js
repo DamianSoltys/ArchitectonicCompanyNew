@@ -7,12 +7,10 @@ const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 
 const bundlePath = path.resolve(__dirname, 'dist');
 const devPath = path.resolve(__dirname, 'src');
-const assetsPath = path.resolve(__dirname, 'assets');
-const isDevelopment = process.env.NODE_ENV === 'development';
 
 module.exports = {
-    devtool: 'source-map',
     mode: 'development',
+    devtool: 'source-map',
 
     entry: {
         index: './src/scripts/index.js'
@@ -20,8 +18,8 @@ module.exports = {
 
     output: {
         path: bundlePath,
-        filename: 'scripts/[name].[hash:5].js',
-        chunkFilename: 'scripts/[name].[hash:5].js',
+        filename: 'scripts/[name].bundle.js',
+        chunkFilename: 'scripts/[name].bundle.js',
         publicPath: '/',
     },
 
@@ -35,12 +33,12 @@ module.exports = {
             {
                 test: /\.s(a|c)ss$/,
                 loader: [
-                    isDevelopment ? 'style-loader' : MiniCssExtractPlugin.loader,
+                    'style-loader',
                     'css-loader',
                     {
                         loader: 'sass-loader',
                         options: {
-                            sourceMap: isDevelopment,
+                            sourceMap: true,
                         }
                     }
                 ]
@@ -81,8 +79,8 @@ module.exports = {
     plugins: [
         new CleanWebpackPlugin(),
         new MiniCssExtractPlugin({
-            filename: isDevelopment ? 'styles/[name].css' : 'styles/[name].[hash].css',
-            chunkFilename: isDevelopment ? 'styles/[id].css' : 'styles/[id].[hash].css'
+            filename: 'styles/[name].css',
+            chunkFilename: 'styles/[id].css',
         }),
         new HtmlWebpackPlugin({
             filename: 'html/index.html',
@@ -99,7 +97,7 @@ module.exports = {
                 parallel: true,
                 sourceMap: true
             }),
-            new OptimizeCssAssetsPlugin({})
+            new OptimizeCssAssetsPlugin({}),
         ]
     }
 }
