@@ -1,19 +1,19 @@
 const path = require('path');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
-const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin'); 
-const UglifyJsPlugin = require("uglifyjs-webpack-plugin");
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 
 const bundlePath = path.resolve(__dirname, 'dist');
 const devPath = path.resolve(__dirname, 'src');
 
+
 module.exports = {
     mode: 'development',
     devtool: 'source-map',
 
     entry: {
-        index: './src/scripts/index.js'
+        index: './src/scripts/index.js',
+        common: './src/scripts/common.js',
     },
 
     output: {
@@ -25,7 +25,8 @@ module.exports = {
 
     devServer: {
         port: 8080,
-        contentBase: devPath
+        contentBase: devPath,
+        hot: true,
     },
 
     module: {
@@ -56,19 +57,38 @@ module.exports = {
                 }
             },
             {
+                test: /\.js$/,
+                exclude: /node_modules/,
+                enforce: "pre",
+                loader: 'eslint-loader',
+                options: {
+                    emitWarning: true,
+                    configFile: "./.eslintrc.json"
+                },
+            },
+            {
                 test: /\.(png|jpe?g|gif|svg|jfif)$/i,
                 loader: 'file-loader',
                 options: {
-                    outputPath: 'assets',
-                    publicPath: 'assets',
+                    outputPath: 'assets/images',
+                    publicPath: '../assets/images',
                     esModule: false,
+                }
+            },
+            {
+                test: /\.(woff|woff2|eot|ttf)(\?.*)?$/,
+                loader: 'file-loader',
+                options: {
+                    limit: 10000,
+                    outputPath: 'assets/fonts',
+                    publicPath: '../assets/fonts',
                 }
             },
         ],
     },
 
-    resolve: {
-        extensions: ['.js', '.jsx', '.scss'],
+    resolve: {  
+        extensions: [".js", ".scss", ".html"],
         alias: {
             Assets: path.resolve(__dirname, 'src/assets'),
             Html: path.resolve(__dirname, 'src/html'),
@@ -86,18 +106,7 @@ module.exports = {
             filename: 'html/index.html',
             template: './src/html/index.html',
             inject: true,
-            chunks: ['index'],
-        })
+            chunks: ['index','common'],
+        }),
     ],
-
-    optimization: {
-        minimizer: [
-            new UglifyJsPlugin({
-                cache: true,
-                parallel: true,
-                sourceMap: true
-            }),
-            new OptimizeCssAssetsPlugin({}),
-        ]
-    }
 }

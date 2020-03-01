@@ -1,0 +1,13 @@
+{
+    "env": {
+        "node": 1,
+        "browser": 1,
+        "es2020": 1
+    },
+    "parser": "babel-eslint",
+    "rules": {
+        "semi": ["error", "always"],
+        "quotes": ["error", "single", { "allowTemplateLiterals": true }],
+        "max-len": [1, 120, 2, {"ignoreComments": true}]
+    }
+}

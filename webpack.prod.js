@@ -11,7 +11,8 @@ module.exports = {
     mode:'production',
 
     entry: {
-        index: './src/scripts/index.js'
+        index: './src/scripts/index.js', 
+        common: './src/scripts/common.js',
     },
 
     output: {
@@ -49,23 +50,43 @@ module.exports = {
                 }
             },
             {
+                test: /\.js$/,
+                exclude: /node_modules/,
+                enforce: "pre",
+                loader: 'eslint-loader',
+                options: {
+                    emitWarning: true,
+                    configFile: "./.eslintrc.json"
+                },
+            },
+            {
                 test: /\.(png|jpe?g|gif|svg|jfif)$/i,
                 loader: 'file-loader',
                 options: {
-                    outputPath: 'assets',
-                    publicPath: '../assets',
+                    outputPath: 'assets/images',
+                    publicPath: '../assets/images',
                     esModule: false,
+                }
+            },
+            {
+                test: /\.(woff|woff2|eot|ttf)(\?.*)?$/,
+                loader: 'file-loader',
+                options: {
+                    limit: 10000,
+                    outputPath: 'assets/fonts',
+                    publicPath: '../assets/fonts',
                 }
             },
         ],
     },
 
     resolve: {
-        extensions: ['.js', '.jsx', '.scss'],
+        extensions: [".js", ".scss", ".html"],
         alias: {
             Assets: path.resolve(__dirname, 'src/assets'),
             Html: path.resolve(__dirname, 'src/html'),
             Styles: path.resolve(__dirname, 'src/styles'),
+            Scripts: path.resolve(__dirname, 'src/scripts'),
         }           
     },
 
@@ -78,12 +99,13 @@ module.exports = {
         new HtmlWebpackPlugin({
             filename: 'html/index.html',
             template: './src/html/index.html',
-            inject: true,
-            chunks: ['index'],
-        })
+            inject: 'true',
+            chunks: ['index','common','vendor'],
+        }),
     ],
 
     optimization: {
+        minimize: true,
         minimizer: [
             new UglifyJsPlugin({
                 cache: true,
@@ -91,6 +113,17 @@ module.exports = {
                 sourceMap: true
             }),
             new OptimizeCssAssetsPlugin({}),
-        ]
+        ],
+        namedChunks: true,
+        splitChunks: {
+            cacheGroups: {
+                vendors: {
+                    test: /[\\/]node_modules[\\/]/,
+                    chunks: 'all',
+                    name: 'vendor',
+                    enforce: true
+                },
+            }    
+        }
     }
 }
